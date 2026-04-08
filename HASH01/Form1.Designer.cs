@@ -57,9 +57,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(50, 151);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(33, 12);
+            this.label1.Size = new System.Drawing.Size(86, 12);
             this.label1.TabIndex = 1;
-            this.label1.Text = "label1";
+            this.label1.Text = "請輸入hash明文";
             // 
             // textBox1
             // 
