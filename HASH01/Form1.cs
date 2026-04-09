@@ -38,16 +38,30 @@ namespace HASH01
 
         private void button2_Click(object sender, EventArgs e)
         {
-            des_encodeing.Key = ASCIIEncoding.ASCII.GetBytes(textBox2.Text);
-            des_encodeing.IV = ASCIIEncoding.ASCII.GetBytes(textBox5.Text);
+            des_encodeing.Key = UTF8Encoding.UTF8.GetBytes(textBox2.Text);
+            des_encodeing.IV = UTF8Encoding.UTF8.GetBytes(textBox5.Text);
             des_encodeing.Mode = CipherMode.CBC;
             des_encodeing.Padding = PaddingMode.PKCS7;
             MemoryStream ms = new MemoryStream();
             CryptoStream cs = new CryptoStream(ms, des_encodeing.CreateEncryptor(), CryptoStreamMode.Write);
-            byte[] plain_text_byte = ASCIIEncoding.ASCII.GetBytes(textBox3.Text);
+            byte[] plain_text_byte = UTF8Encoding.UTF8.GetBytes(textBox3.Text);
             cs.Write(plain_text_byte, 0, plain_text_byte.Length);
             cs.FlushFinalBlock();
             textBox4.Text = Convert.ToBase64String(ms.ToArray()); 
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            des_encodeing.Key = UTF8Encoding.UTF8.GetBytes(textBox2.Text);
+            des_encodeing.IV = UTF8Encoding.UTF8.GetBytes(textBox5.Text);
+            des_encodeing.Mode = CipherMode.CBC;
+            des_encodeing.Padding = PaddingMode.PKCS7;
+            MemoryStream ms = new MemoryStream();
+            CryptoStream cs = new CryptoStream(ms, des_encodeing.CreateDecryptor(), CryptoStreamMode.Write);
+            byte[] plain_text_byte = Convert.FromBase64String(textBox4.Text);
+            cs.Write(plain_text_byte, 0, plain_text_byte.Length);
+            cs.FlushFinalBlock();
+            textBox6.Text = Encoding.UTF8.GetString(ms.ToArray());
         }
     }
 }
