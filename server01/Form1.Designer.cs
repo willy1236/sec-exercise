@@ -37,14 +37,15 @@
             this.textBox1.Location = new System.Drawing.Point(-1, 2);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(802, 348);
             this.textBox1.TabIndex = 0;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(85, 386);
+            this.button1.Location = new System.Drawing.Point(88, 380);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(75, 39);
             this.button1.TabIndex = 1;
             this.button1.Text = "啟動伺服器";
             this.button1.UseVisualStyleBackColor = true;
