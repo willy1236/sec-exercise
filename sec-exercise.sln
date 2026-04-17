@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1778
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HASH01", "HASH01\HASH01.csproj", "{6801D768-D514-49BD-9747-A9B1D52417F7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hash01", "hash01\hash01.csproj", "{6801D768-D514-49BD-9747-A9B1D52417F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "server1", "server\server1.csproj", "{D8BA9AA3-CFF2-416E-AE79-6FD6D49DFD5B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "server01", "server01\server01.csproj", "{D8BA9AA3-CFF2-416E-AE79-6FD6D49DFD5B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "client1", "client1\client1.csproj", "{E5804071-E3B8-4397-9C51-BD898461012A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "client01", "client01\client01.csproj", "{E5804071-E3B8-4397-9C51-BD898461012A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
