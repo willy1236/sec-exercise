@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "client01", "client01\client
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RSA01", "RSA01\RSA01.csproj", "{46BC323C-52DC-4B5C-84EC-BA8E09C24F98}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GTOTP", "GTOTP\GTOTP.csproj", "{559F8DD9-422B-41D2-BA2C-AA3033C698DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{46BC323C-52DC-4B5C-84EC-BA8E09C24F98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46BC323C-52DC-4B5C-84EC-BA8E09C24F98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46BC323C-52DC-4B5C-84EC-BA8E09C24F98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{559F8DD9-422B-41D2-BA2C-AA3033C698DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{559F8DD9-422B-41D2-BA2C-AA3033C698DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{559F8DD9-422B-41D2-BA2C-AA3033C698DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{559F8DD9-422B-41D2-BA2C-AA3033C698DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
