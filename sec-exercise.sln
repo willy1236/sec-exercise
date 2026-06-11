@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1778
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37314.3 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hash01", "hash01\hash01.csproj", "{6801D768-D514-49BD-9747-A9B1D52417F7}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GTOTP", "GTOTP\GTOTP.csproj", "{559F8DD9-422B-41D2-BA2C-AA3033C698DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBLogin", "DBLogin\DBLogin.csproj", "{41C14ADC-B7C9-40CD-AA12-335413409BD6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "term-project", "term-project\term-project.csproj", "{FBBDD6A1-BFD5-45A5-8B5C-D3B55334C796}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{41C14ADC-B7C9-40CD-AA12-335413409BD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41C14ADC-B7C9-40CD-AA12-335413409BD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41C14ADC-B7C9-40CD-AA12-335413409BD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBBDD6A1-BFD5-45A5-8B5C-D3B55334C796}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBBDD6A1-BFD5-45A5-8B5C-D3B55334C796}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBBDD6A1-BFD5-45A5-8B5C-D3B55334C796}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBBDD6A1-BFD5-45A5-8B5C-D3B55334C796}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
