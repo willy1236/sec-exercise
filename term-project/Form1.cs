@@ -206,7 +206,7 @@ namespace term_project
                 }
             }
             if (dt.Rows.Count != 1) {
-                MessageBox.Show("帳號或密碼不正確");
+                lblResult.Text = "帳號或密碼不正確";
                 return;
             }
 
@@ -214,7 +214,7 @@ namespace term_project
             string pw_db = dt.Rows[0]["Password"].ToString();
             if (!VerifyHmac(pw_input, pw_db))
             {
-                MessageBox.Show("帳號或密碼不正確");
+                lblResult.Text = "帳號或密碼不正確";
                 return;
             }
 
