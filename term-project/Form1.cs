@@ -18,9 +18,8 @@ namespace term_project
 {
     public partial class Form1 : Form
     {
-        string pub_xml, pvt_xml;
-        RSAParameters pub_parameter, pvt_parameter;
-        string key_dir = @".\key";
+        static string key_path = @".\secret.key";
+        string secret_key;
 
         string db_path = "User.db";
         string connection_str;
@@ -41,158 +40,124 @@ namespace term_project
                     conn.Open();
 
                     sql = @"CREATE TABLE IF NOT EXISTS Users(
-                            Id TEXT Primary Key,
+                            Id Integer Primary Key Autoincrement,
                             Name TEXT NOT NULL,
                             Password TEXT NOT NULL,
-                            SecreKey TEXT NULL);
+                            SecretKey TEXT NOT NULL);
                             ";
                     cmd = new SQLiteCommand(sql, conn);
                     cmd.ExecuteNonQuery();
                 }
             }
 
-            Load_key();
+            secret_key = GetSecretKey();
         }
 
-        public void Load_key()
+        public static string GenerateSHA256Secret()
         {
-            if (File.Exists(key_dir + @"\pvt.xml"))
-            {
-                StreamReader sr = new StreamReader(key_dir + @"\pub.xml");
-                pub_xml = "";
-                while(!sr.EndOfStream)
-                {
-                    pub_xml += sr.ReadLine();
-                }
-                sr.Close();
-
-                sr = new StreamReader(key_dir + @"\pvt.xml");
-                pvt_xml = "";
-                while (!sr.EndOfStream)
-                {
-                    pvt_xml += sr.ReadLine();
-                }
-                sr.Close();
-            }
-            else
-            {
-                Create_key();
-            }
-        }
-        public static string EncryptRSA(string original, string xmlString)
-        {
-            try
-            {
-                RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-                rsa.FromXmlString(xmlString);
-                byte[] s = Encoding.UTF8.GetBytes(original);
-                return BitConverter.ToString(rsa.Encrypt(s, false)).Replace("-", string.Empty);
-            }
-            catch
-            {
-                return original;
-            }
-        }
-        public static string DecryptRSA(string hexstring, string xmlString)
-        {
-            try
-            {
-                RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-                rsa.FromXmlString(xmlString);
-                byte[] s = new byte[hexstring.Length / 2];
-                for (int i = 0; i < hexstring.Length; i += 2)
-                {
-                    s[i / 2] = Byte.Parse(hexstring[i].ToString() + hexstring[i + 1].ToString(),
-                        System.Globalization.NumberStyles.HexNumber);
-                }
-                return Encoding.UTF8.GetString(rsa.Decrypt(s, false));
-            }
-            catch
-            {
-                return hexstring;
-            }
+            return Convert.ToBase64String(KeyGeneration.GenerateRandomKey(32));
         }
 
-
-        public string Generate_secret()
+        public static string GenerateBase32Secret()
         {
             return Base32Encoding.ToString(KeyGeneration.GenerateRandomKey(20));
         }
-        public void Create_key()
+        
+        public static string GetSecretKey()
         {
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            pub_xml = rsa.ToXmlString(false);
-            pvt_xml = rsa.ToXmlString(true);
-            pub_parameter = rsa.ExportParameters(false);
-            pvt_parameter = rsa.ExportParameters(true);
-
-            try
+            if (File.Exists(key_path))
             {
-                DirectoryInfo di = Directory.CreateDirectory(key_dir);
-                MessageBox.Show("密鑰子目錄建立成功，時間：" + Directory.GetCreationTime(key_dir).ToString());
+                return File.ReadAllText(key_path).Trim();
             }
-            catch (Exception ex)
+            
+            string newKey = GenerateSHA256Secret();
+            File.WriteAllText(key_path, newKey);
+            return newKey;
+        }
+
+        public static string ComputeHmacSha256(string message, string secretKey)
+        {
+            byte[] keyBytes = Encoding.UTF8.GetBytes(secretKey);
+            byte[] messageBytes = Encoding.UTF8.GetBytes(message);
+
+            using (HMACSHA256 hmac = new HMACSHA256(keyBytes))
             {
-                MessageBox.Show("密鑰子目錄建立失敗：" + ex.ToString());
+                byte[] hashBytes = hmac.ComputeHash(messageBytes);
+                return Convert.ToBase64String(hashBytes);
+            }
+        }
+
+        public static bool FixedTimeEquals(byte[] left, byte[] right)
+        {
+            if (left == null || right == null)
+            {
+                return left == right;
             }
 
-            StreamWriter sw = new StreamWriter(key_dir + @"\pub.xml");
-            sw.WriteLine(pub_xml);
-            sw.Close();
+            if (left.Length != right.Length)
+            {
+                return false;
+            }
 
-            sw = new StreamWriter(key_dir + @"\pvt.xml");
-            sw.WriteLine(pvt_xml);
-            sw.Close();
+            int accum = 0;
+            for (int i = 0; i < left.Length; i++)
+            {
+                accum |= left[i] ^ right[i];
+            }
+
+            return accum == 0;
+        }
+        public static bool VerifyHmac(string hash1, string hash2)
+        {
+            byte[] bytes1 = Convert.FromBase64String(hash1);
+            byte[] bytes2 = Convert.FromBase64String(hash2);
+            return FixedTimeEquals(bytes1, bytes2);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (String.IsNullOrWhiteSpace(textBox1.Text))
+            {
+                MessageBox.Show("請填入帳號");
+                return;
+            }
+            if (String.IsNullOrWhiteSpace(textBox2.Text))
+            {
+                MessageBox.Show("請填入密碼");
+                return;
+            }
+
+            string _base32Secret = GenerateBase32Secret();
+            string AccountName = textBox1.Text;
+            using (DataTable dt = new DataTable())
             using (conn = new SQLiteConnection(connection_str))
             {
                 conn.Open();
-                sql = @"Insert into Users(Id, Name, Password, SecreKey)
-                    Values(@Id, @Name, @Password, @SecreKey);
-                    ";
+                
+                sql = @"Select Id, Name, Password, SecretKey From Users Where Name = @Name;";
                 cmd = new SQLiteCommand(sql, conn);
-                cmd.Parameters.AddWithValue("@Id", textBox1.Text);
-                cmd.Parameters.AddWithValue("@Name", textBox3.Text);
-                cmd.Parameters.AddWithValue("@Password", EncryptRSA(textBox2.Text, pub_xml));
-                cmd.Parameters.AddWithValue("@SecreKey", Generate_secret());
-                cmd.ExecuteNonQuery();
-            }
-        }
-        private void button2_Click(object sender, EventArgs e)
-        {
-            DataTable dt = new DataTable();
-            using (conn = new SQLiteConnection(connection_str))
-            {
-                sql = @"Select Id, Name, Password, SecreKey From Users Where Id = @Id Order by ID";
-                cmd = new SQLiteCommand(sql, conn);
-                cmd.Parameters.AddWithValue("@Id", textBox1.Text);
+                cmd.Parameters.AddWithValue("@Name", textBox1.Text);
                 using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
                 {
                     adapter.Fill(dt);
                 }
-            }
-            if (dt.Rows.Count != 1) {
-                MessageBox.Show("帳號或密碼不正確");
-                return;
-            }
+                if (dt.Rows.Count > 0)
+                {
+                    MessageBox.Show("此帳號已被註冊");
+                    return;
+                }
 
-            // TODO: 非正確的比對實作方式
-            string pw_input = textBox2.Text;
-            string pw_db = DecryptRSA(dt.Rows[0]["Password"].ToString(), pvt_xml);
-            if (pw_db != pw_input)
-            {
-                MessageBox.Show("帳號或密碼不正確");
-                return;
+                sql = @"Insert into Users(Name, Password, SecretKey)
+                    Values(@Name, @Password, @SecretKey);
+                    ";
+                cmd = new SQLiteCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Name", textBox1.Text);
+                cmd.Parameters.AddWithValue("@Password", ComputeHmacSha256(textBox2.Text, secret_key));
+                cmd.Parameters.AddWithValue("@SecretKey", _base32Secret);
+                cmd.ExecuteNonQuery();
             }
             
-            // dataGridView1.DataSource = dt;
-            string _base32Secret = dt.Rows[0]["SecreKey"].ToString();
-            string AccountName = dt.Rows[0]["Id"].ToString();
             txtSecret.Text = _base32Secret;
-
             string otpAuthUri =
                 $"otpauth://totp/{Uri.EscapeDataString(Issuer)}:{Uri.EscapeDataString(AccountName)}" +
                 $"?secret={_base32Secret}" +
@@ -209,9 +174,66 @@ namespace term_project
                 Bitmap qrBitmap = qrCode.GetGraphic(8);
                 picQr.Image = qrBitmap;
             }
-            lblResult.Text = "請使用 Google Authenticator 掃描 QR Code。";
+            lblResult.Text = "註冊完成，請使用 Google Authenticator 掃描 QR Code。";
+        }
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (String.IsNullOrWhiteSpace(textBox1.Text))
+            {
+                MessageBox.Show("請填入帳號");
+                return;
+            }
+            if (String.IsNullOrWhiteSpace(textBox2.Text))
+            {
+                MessageBox.Show("請填入密碼");
+                return;
+            }
+            if (String.IsNullOrWhiteSpace(txtCode.Text))
+            {
+                MessageBox.Show("請填入驗證碼");
+                return;
+            }
 
+            DataTable dt = new DataTable();
+            using (conn = new SQLiteConnection(connection_str))
+            {
+                sql = @"Select Id, Name, Password, SecretKey From Users Where Name = @Name;";
+                cmd = new SQLiteCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Name", textBox1.Text);
+                using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd))
+                {
+                    adapter.Fill(dt);
+                }
+            }
+            if (dt.Rows.Count != 1) {
+                MessageBox.Show("帳號或密碼不正確");
+                return;
+            }
 
+            string pw_input = ComputeHmacSha256(textBox2.Text, secret_key);
+            string pw_db = dt.Rows[0]["Password"].ToString();
+            if (!VerifyHmac(pw_input, pw_db))
+            {
+                MessageBox.Show("帳號或密碼不正確");
+                return;
+            }
+
+            string _base32Secret = dt.Rows[0]["SecretKey"].ToString();
+            string userCode = txtCode.Text.Trim();
+            var totp = new Totp(Base32Encoding.ToBytes(_base32Secret));
+            bool isValid = totp.VerifyTotp(
+                userCode,
+                out long timeStepMatched,
+                new VerificationWindow(previous: 1, future: 1)
+            );
+            if (isValid)
+            {
+                lblResult.Text = "驗證成功！";
+            }
+            else
+            {
+                lblResult.Text = "驗證失敗，請確認驗證碼或系統時間。";
+            }
         }
     }
 }
